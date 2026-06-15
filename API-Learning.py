@@ -15,7 +15,7 @@ def generateLLMResponse(weather, temperature, location, clothes):
 
     llmResponse = client.models.generate_content_stream(
         model = "gemini-3.5-flash",
-        contents = f"I am currently in {location}. The weather is {weather} and it is {temperature} degrees celsius. Here is a list of my clothes that I currently have: {clothes}. Based on this, give me 2 outfit recommendations using the clothes I have - 1 outfit that would suit the weather conditions perfectly and 1 backup option for me to choose from"
+        contents = f"I am currently in {location}. The weather is {weather} and it is {temperature} degrees celsius. Here is a list of my clothes that I currently have: {clothes}. Based on this, give me 2 outfit recommendations using the clothes I have - 1 outfit that would suit the weather conditions perfectly and 1 backup option for me to choose from. Take the colour of the outfit into consideration as well"
     )
 
     output = ""
@@ -70,7 +70,7 @@ if response.status_code == 200:
         print(generateLLMResponse(weather, temperature, location, userClothes))
     except ServerError:
         print("The server is currently experiencing high demand, please try later")
-        
+
     """
     accessories = determineAccessories(weather)
     attire = determineClothes(temperature)
