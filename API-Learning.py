@@ -3,11 +3,13 @@ import os
 from dotenv import load_dotenv # Used to get data from the .env file
 from google import genai
 import csv
+import GoogleCalendar
 load_dotenv()
 
 
 API_KEY = os.getenv("API_KEY")
 LLM_KEY = os.getenv("LLM_API_KEY")
+CALENDAR_KEY = os.getenv("CALENDAR_API_KEY")
 client = genai.Client(api_key = LLM_KEY)
 
 
@@ -15,7 +17,7 @@ def generateLLMResponse(weather, temperature, location, clothes):
 
     llmResponse = client.models.generate_content_stream(
         model = "gemini-3.5-flash",
-        contents = f"I am currently in {location}. The weather is {weather} and it is {temperature} degrees celsius. Here is a list of my clothes that I currently have: {clothes}. Based on this, give me 2 outfit recommendations using the clothes I have - 1 outfit that would suit the weather conditions perfectly and 1 backup option for me to choose from. Take the colour of the outfit into consideration as well"
+        contents = f"I am currently in {location}. The weather is {weather} and it is {temperature} degrees celsius. Here is a list of the clothes that I own : {clothes}. Here are the events that I have today {GoogleCalendar.main()}. Based on this, give me 2 outfit recommendations using the clothes that I have - 1 outfit that would suit the weather conditions and the events I have today perfectly, and 1 backup option. If necessary, I can pack a bag with another set of clothes if an event I have requires a change of clothes, but don't include multiple outfit changes - I can only take 1 bag with 1 outfit inside! Give me a confidence score out of 10 for both of these options. Don't add extra details about the clothes, only use the details that are provided"
     )
 
     output = ""
