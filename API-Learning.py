@@ -19,6 +19,7 @@ POLLINATIONS_KEY = os.getenv("POLLINATIONS_API_KEY")
 CF_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT")
 CF_API_KEY = os.getenv("CLOUDFLARE_API")
 client = genai.Client(api_key = LLM_KEY)
+userImageURL = "https://res.cloudinary.com/dytqwfesq/image/upload/v1782742488/PXL_20260629_140159088_bjfdzv.jpg"
 
 
 def generateLLMResponse(weather, temperature, location, clothes):
@@ -108,27 +109,33 @@ def showImageWithCloudflare(data):
     with open("outfit.png", "wb") as f:
         f.write(imageResponse.content) #Gets the binary data
 
-def showImageWithPollinations():
-    prompt = "Replace the clothing of the person in the image with a cream linen shirt and grey shorts. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing to a cream linen shirt and grey shorts. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity."
-    userImage = getUserImage()
-    print(type(userImage))
-    url = f"https://gen.pollinations.ai/image/{prompt}"
-    imageResponse = requests.get(
-        url,
+def showImageWithPollinations(data):
+    mainTop = data["primary_outfit"]["top"]
+    mainBottoms = data["primary_outfit"]["bottom"]
+    prompt = f"Replace the clothing of the person in the image with a {mainTop} and {mainBottoms}. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity. Show the person's shoes and both feet."
+    #userImage = getUserImage()
+    #testPrompt = "Change only the person's shirt to bright neon green. Do not change anything else."
+    #print(type(userImage))
+    postImage = requests.post( # Post used for editing image
+        "https://gen.pollinations.ai/v1/images/edits",
         headers = {
             "Authorization" : f"Bearer {POLLINATIONS_KEY}"
         },
-        params = {
-            "model" : "flux",
+        json = {
+            "prompt" : prompt,
+            "model" : "nanobanana",
             "quality" : "high",
-            "image" : userImage
+            "image" : userImageURL,
         }
     )
-    print(imageResponse.status_code)
-    print(imageResponse.headers.get("content-type"))
-    print(imageResponse.text[:500])
+    #Main image is as a b64 image or a URL
+    print(postImage.status_code)
+    print(postImage.text)
+    response = postImage.json()
+    b64Image = response["data"][0]["b64_json"] # Data is stored this way so am using dictionary manipluation to access it
+    image = base64.b64decode(b64Image)
     with open("outfit.png", "wb") as f:
-        f.write(imageResponse.content) #Gets the binary data
+        f.write(image) #Gets the binary data
     
 def getUserImage():
     with open("user.jpg", "rb") as f:
@@ -147,7 +154,7 @@ if response.status_code == 200:
     try:
         output = generateLLMResponse(weather, temperature, location, userClothes)
         #showImage({})
-        showImageWithPollinations()
+        showImageWithPollinations(output)
         image = Image.open("outfit.png")
         image.show()
     except ServerError:
