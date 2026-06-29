@@ -110,23 +110,28 @@ def showImageWithCloudflare(data):
         f.write(imageResponse.content) #Gets the binary data
 
 def showImageWithPollinations(data):
-    mainTop = data["primary_outfit"]["top"]
-    mainBottoms = data["primary_outfit"]["bottom"]
-    prompt = f"Replace the clothing of the person in the image with a {mainTop} and {mainBottoms}. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity. Show the person's shoes and both feet."
+    files = [
+        ("image", open("images/user.jpg", "rb")),
+        ("image", open("images/black-sweater.jpg", "rb")),
+    ] # Multipart-form data
+    #mainTop = data["primary_outfit"]["top"]
+    #mainBottoms = data["primary_outfit"]["bottom"]
+    #prompt = f"Replace the clothing of the person in the image with a {mainTop} and {mainBottoms}. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity. Show the person's shoes and both feet."
     #userImage = getUserImage()
-    #testPrompt = "Change only the person's shirt to bright neon green. Do not change anything else."
+    testPrompt = "Replace the person's top with the sweatshirt shown in the reference image. Replace the bottoms with blue jeans"
     #print(type(userImage))
     postImage = requests.post( # Post used for editing image
         "https://gen.pollinations.ai/v1/images/edits",
         headers = {
             "Authorization" : f"Bearer {POLLINATIONS_KEY}"
         },
-        json = {
-            "prompt" : prompt,
+        data = {
+            "prompt" : testPrompt,
             "model" : "nanobanana",
             "quality" : "high",
-            "image" : userImageURL,
-        }
+            #"image" : [userImageURL,"https://res.cloudinary.com/dytqwfesq/image/upload/v1782763960/PXL_20260629_200815120_em4hrt.jpg"],
+        },
+        files = files,
     )
     #Main image is as a b64 image or a URL
     print(postImage.status_code)
@@ -152,9 +157,9 @@ if response.status_code == 200:
     print(weather, temperature)
     userClothes = getClothes()
     try:
-        output = generateLLMResponse(weather, temperature, location, userClothes)
+        #output = generateLLMResponse(weather, temperature, location, userClothes)
         #showImage({})
-        showImageWithPollinations(output)
+        showImageWithPollinations({})
         image = Image.open("outfit.png")
         image.show()
     except ServerError:
