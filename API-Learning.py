@@ -6,6 +6,7 @@ import csv
 import GoogleCalendar
 import json
 from PIL import Image
+import base64
 
 
 load_dotenv()
@@ -45,6 +46,7 @@ def generateLLMResponse(weather, temperature, location, clothes):
     for chunks in llmResponse:
         output += chunks.text
     jsonOutput = json.loads(output)
+    print(jsonOutput)
     return jsonOutput
 
 
@@ -83,18 +85,21 @@ def showImageWithGemini(data):
     return image
 
 
-def showImage(data):
-    mainTop = data["primary_outfit"]["top"]
-    mainBottoms = data["primary_outfit"]["bottom"]
-    prompt = f"Generate a picture of a person wearing {mainTop} and {mainBottoms}. "
-    url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/@cf/lykon/dreamshaper-8-lcm"
+def showImageWithCloudflare(data):
+    #mainTop = data["primary_outfit"]["top"]
+    #mainBottoms = data["primary_outfit"]["bottom"]
+    prompt = "Replace the clothing of the person in the image with a cream linen shirt and grey shorts. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing to a cream linen shirt and grey shorts. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity."
+    userImage = getUserImage()
+    print(type(userImage))
+    url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/@cf/runwayml/stable-diffusion-v1-5-img2img"
     imageResponse = requests.post(
         url,
         headers={
             "Authorization":f"Bearer {CF_API_KEY}"
         },
         json={
-            "prompt":prompt
+            "prompt":prompt,
+            "image_b64" : userImage,
         },
     )
     print(imageResponse.status_code)
@@ -103,7 +108,32 @@ def showImage(data):
     with open("outfit.png", "wb") as f:
         f.write(imageResponse.content) #Gets the binary data
 
+def showImageWithPollinations():
+    prompt = "Replace the clothing of the person in the image with a cream linen shirt and grey shorts. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing to a cream linen shirt and grey shorts. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity."
+    userImage = getUserImage()
+    print(type(userImage))
+    url = f"https://gen.pollinations.ai/image/{prompt}"
+    imageResponse = requests.get(
+        url,
+        headers = {
+            "Authorization" : f"Bearer {POLLINATIONS_KEY}"
+        },
+        params = {
+            "model" : "flux",
+            "quality" : "high",
+            "image" : userImage
+        }
+    )
+    print(imageResponse.status_code)
+    print(imageResponse.headers.get("content-type"))
+    print(imageResponse.text[:500])
+    with open("outfit.png", "wb") as f:
+        f.write(imageResponse.content) #Gets the binary data
     
+def getUserImage():
+    with open("user.jpg", "rb") as f:
+        base64Image = base64.b64encode(f.read()).decode("utf-8")
+    return base64Image
 
 
 response = requests.get("http://api.openweathermap.org/data/2.5/weather", params=parameters)
@@ -116,20 +146,13 @@ if response.status_code == 200:
     userClothes = getClothes()
     try:
         output = generateLLMResponse(weather, temperature, location, userClothes)
-        showImage(output)
+        #showImage({})
+        showImageWithPollinations()
         image = Image.open("outfit.png")
         image.show()
     except ServerError:
         print("The server is currently experiencing high demand, please try later")
 
-    """
-    accessories = determineAccessories(weather)
-    attire = determineClothes(temperature)
-    message = f"It is {temperature} degrees celsius and {weather}. Wear a {attire}"
-    if accessories is not None:
-        message += f" and bring {accessories}"
-    print(message)
-    """
     
     
 else:
