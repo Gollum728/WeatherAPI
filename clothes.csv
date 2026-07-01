@@ -1,27 +1,17 @@
-Item, Warmth, Waterproof
-Black Hoodie, High, No
-Plain Grey t-shirt, Low, No
-Blue Raincoat, Low, Yes
-Blue Jeans, Medium, No
-Brown Trousers, Medium, No
-Orange shorts, Low, No
-Red Jacket, High, Yes
-Green t-shirt, Low, No
-Black sweatshirt, High, No
-Black Jeans, Medium, No
-Yellow Anorak, Low, Yes
-Brown shorts, Low, Yes
-Black Jacket with no hood, High, Yes
-Brown Quarter zip, High, No
-Tracksuit, Medium, No
-Cricket Jersey, Low, No
-Blue Shirt, Medium, No
-Grey Trousers, Medium, No
-Black Tie, Low, No
-Blue collar t-shirt, Low, No
-Cream linen shirt, Low, No
-Blue shorts, Low, No
-Grey shorts, Low, No
-Printed blue t-shirt, Low, No
-Blue/red collar t-shirt, Low, No
-Blue checked shirt with inner white t-shirt, No, No
+Item, Type, Warmth, Waterproof, Image
+Puma Black Hoodie, Top, High, No, images/black-hoodie.jpg
+Black Jeans, Bottom, Medium, No, images/black-jeans.jpg
+Black Roundneck Sweater, Top, High, No, images/black-sweater.jpg
+Blue Formal Shirt, Top, Medium, No, images/blue-formal-shirt
+Blue Jeans, Bottom, Medium, No, images/blue-jeans
+Cyan polo t-shirt, Top, Low, No, images/blue-polo-tshirt.jpg
+Blue Quarter Zip, Top, High, No, images/blue-quarter-zip.jpg
+Blue Summer Jacket, Outerwear, Medium, Yes, images/blue-summer-jacket.jpg
+Tommy Hilfiger Blue Winter Jacket, Outerwear, High, Yes, images/blue-winter-jacket
+Brown trousers, Bottom, Medium, No, images/brown-chinos.jpg
+Brown shorts, Bottom, Low, No, images/brown-shorts.jpg
+Club cricket training jersey, Top, Low, No, images/cricket-training-jersey.jpg
+Superdry Green T-shirt, Top, Low, No, images/green-printed-tshirt.jpg
+Grey shorts, Bottom, Low, No, images/grey-shorts.jpg
+Hollister Navy full sleeved polo t-shirt, Top, Medium, No, images/navy-full-sleeved-tshirt.jpg
+Red and White striped rubgy t-shirt, Top, Medium, No, images/striped-rugby-shirt.jpg
