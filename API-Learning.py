@@ -28,12 +28,14 @@ def generateLLMResponse(weather, temperature, location, clothes):
   "primary_outfit": {
     "top": "",
     "bottom": "",
+    "outwear" : "",
     "packedClothes" : [],
     "confidence": 0
   },
   "backup_outfit": {
     "top": "",
     "bottom": "",
+    "outwear" : "",
     "packedClothes" : [],
     "confidence": 0
   }
@@ -56,10 +58,32 @@ def getClothes():
     with open("clothes.csv", "r") as f:
         data = csv.reader(f)
         for row in data:
+            del row[-1]
             newRow = ",".join(row)
             clothesString = clothesString + newRow + "\n"
     return clothesString
 location = input("Enter a city : ")
+
+
+def makeWardrobeDict():
+    clothesDict = {}
+    with open("clothes.csv", "r") as f:
+        data = csv.reader(f)
+        for row in data:
+            clotheDict = {}
+            clothesDict[row[0]] = clotheDict
+            clotheDict["image"] = row[-1].replace(" ", "")
+    return clothesDict
+
+def getClothingImages(wardrobe, recommendation):
+    imagesDict = {}
+    mainTop = recommendation["primary_outfit"]["top"]
+    mainBottom = recommendation["primary_outfit"]["bottom"]
+    topImage = wardrobe[mainTop]["image"]
+    bottomImage = wardrobe[mainBottom]["image"]
+    imagesDict["Top"] = topImage
+    imagesDict["Bottom"] = bottomImage
+    return imagesDict
 
 parameters = {"q": location, "units":"metric", "appid":API_KEY} # Parameters that are declared to get specific data from the API
 
@@ -109,16 +133,28 @@ def showImageWithCloudflare(data):
     with open("outfit.png", "wb") as f:
         f.write(imageResponse.content) #Gets the binary data
 
-def showImageWithPollinations(data):
+def showImageWithPollinations(data, recommendation):
+    print(data["Top"])
+    print(data["Bottom"])
+    #top = recommendation["primary_outfit"]["top"]
+    #bottom = recommendation["primary_outfit"]["bottom"]
     files = [
         ("image", open("images/user.jpg", "rb")),
-        ("image", open("images/black-sweater.jpg", "rb")),
+        ("image", open("images/blue-quarter-zip.jpg", "rb")),
+        ("image", open("images/brown-chinos.jpg", "rb")),
+        #("image", open(data["Top"], "rb")),
+        #("image", open(data["Bottom"], "rb")),
     ] # Multipart-form data
     #mainTop = data["primary_outfit"]["top"]
     #mainBottoms = data["primary_outfit"]["bottom"]
-    #prompt = f"Replace the clothing of the person in the image with a {mainTop} and {mainBottoms}. Keep the exact same person, face, hairstyle, skin tone, body shape, pose and background. Only change the clothing. Photorealistic photograph. Realistic face. Realistic human proportions. Do not change identity. Show the person's shoes and both feet."
+    prompt = f"""Completely remove the person's existing top and bottom. Do not preserve any part of the current clothing. Replace them only with the garments shown in the reference images
+                The first image is the person to edit. Keep this exact person, including their face, hairstyle, skin tone, body shape, pose, camera angle and background. Do not change their identity.
+                Replace the person's current top with the exact garment shown in the second reference image, which is a {top}. Match the sleeve length, collar, fit, colour, fabric and design as closely as possible.
+                The third image is the reference for the bottom. Replace the person's current bottom with the bottom shown in the third image, which are {bottom}.
+                Recreate the clothing as accurately as possible, including its colour, design, logos, fit and style. Only change the clothing. Keep everything else exactly the same. Produce a photorealistic, full-body image showing the person's shoes and both feet.
+                Preserve the original full-body composition and the output must show the person from head to toe. Do not crop or zoom the person, keep the image as it was!!"""
     #userImage = getUserImage()
-    testPrompt = "Replace the person's top with the sweatshirt shown in the reference image. Replace the bottoms with blue jeans"
+    #testPrompt = "Replace the person's top with the sweatshirt shown in the reference image. Replace the bottoms with blue jeans"
     #print(type(userImage))
     postImage = requests.post( # Post used for editing image
         "https://gen.pollinations.ai/v1/images/edits",
@@ -126,16 +162,17 @@ def showImageWithPollinations(data):
             "Authorization" : f"Bearer {POLLINATIONS_KEY}"
         },
         data = {
-            "prompt" : testPrompt,
+            "prompt" : prompt,
             "model" : "nanobanana",
             "quality" : "high",
             #"image" : [userImageURL,"https://res.cloudinary.com/dytqwfesq/image/upload/v1782763960/PXL_20260629_200815120_em4hrt.jpg"],
+            "size" : "832x1216"
         },
         files = files,
     )
     #Main image is as a b64 image or a URL
-    print(postImage.status_code)
-    print(postImage.text)
+    #print(postImage.status_code)
+    #print(postImage.text)
     response = postImage.json()
     b64Image = response["data"][0]["b64_json"] # Data is stored this way so am using dictionary manipluation to access it
     image = base64.b64decode(b64Image)
@@ -156,10 +193,13 @@ if response.status_code == 200:
     weather = jsonData["weather"][0]["description"]
     print(weather, temperature)
     userClothes = getClothes()
+
     try:
         #output = generateLLMResponse(weather, temperature, location, userClothes)
-        #showImage({})
-        showImageWithPollinations({})
+        
+        wardrobeDict = makeWardrobeDict()
+        clothesImages = getClothingImages(wardrobeDict, output)
+        showImageWithPollinations(clothesImages, {})
         image = Image.open("outfit.png")
         image.show()
     except ServerError:
