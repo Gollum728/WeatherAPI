@@ -9,7 +9,7 @@ def getClothes():
             newRow = ",".join(row)
             clothesString = clothesString + newRow + "\n"
     return clothesString
-location = input("Enter a city : ")
+
 
 
 def loadWardrobe():

@@ -62,14 +62,14 @@ def showImageWithCloudflare(data):
 def showImageWithPollinations(images, recommendation):
     print(images["Top"])
     print(images["Bottom"])
-    #top = recommendation["primary_outfit"]["top"]
-    #bottom = recommendation["primary_outfit"]["bottom"]
+    top = recommendation["primary_outfit"]["top"]
+    bottom = recommendation["primary_outfit"]["bottom"]
     files = [
         ("image", open("images/user.jpg", "rb")),
-        ("image", open("images/blue-quarter-zip.jpg", "rb")),
-        ("image", open("images/brown-chinos.jpg", "rb")),
-        #("image", open(images["Top"], "rb")),
-        #("image", open(images["Bottom"], "rb")),
+        #("image", open("images/blue-quarter-zip.jpg", "rb")),
+        #("image", open("images/brown-chinos.jpg", "rb")),
+        ("image", open(images["Top"], "rb")),
+        ("image", open(images["Bottom"], "rb")),
     ] # Multipart-form data
     #mainTop = data["primary_outfit"]["top"]
     #mainBottoms = data["primary_outfit"]["bottom"]
@@ -77,7 +77,8 @@ def showImageWithPollinations(images, recommendation):
                 The first image is the person to edit. Keep this exact person, including their face, hairstyle, skin tone, body shape, pose, camera angle and background. Do not change their identity.
                 Replace the person's current top with the exact garment shown in the second reference image, which is a {top}. Match the sleeve length, collar, fit, colour, fabric and design as closely as possible.
                 The third image is the reference for the bottom. Replace the person's current bottom with the bottom shown in the third image, which are {bottom}.
-                Recreate the clothing as accurately as possible, including its colour, design, logos, fit and style. Only change the clothing. Keep everything else exactly the same. Produce a photorealistic, full-body image showing the person's shoes and both feet.
+                Recreate the clothing as accurately as possible, including its colour, design, logos, fit and style. Only change the clothing. Don't add any folds to the clothes, keep them exactly how they are presented in the images!
+                Keep everything else exactly the same. Produce a photorealistic, full-body image showing the person's shoes and both feet.
                 Preserve the original full-body composition and the output must show the person from head to toe. Do not crop or zoom the person, keep the image as it was!!"""
     #userImage = getUserImage()
     #testPrompt = "Replace the person's top with the sweatshirt shown in the reference image. Replace the bottoms with blue jeans"

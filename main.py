@@ -33,7 +33,7 @@ def main():
     weatherData = weather.getWeather(city)
     clothes = wardrobe.getClothes()
 
-    recommendation = c_r.generateLLMResponse(weatherData["weather"], weatherData["temperature"], city, clothes)
+    recommendation = c_r.generateLLMResponse(weatherData["Weather"], weatherData["Temperature"], city, clothes)
     
     userWardrobe = wardrobe.loadWardrobe()
 
