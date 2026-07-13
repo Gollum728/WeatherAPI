@@ -11,6 +11,7 @@ from googleapiclient.errors import HttpError
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
+email = ""
 
 def main():
   """Shows basic usage of the Google Calendar API.
@@ -34,9 +35,12 @@ def main():
     # Save the credentials for the next run
     with open("token.json", "w") as token:
       token.write(creds.to_json())
+    print(creds.to_json())
 
   try:
     service = build("calendar", "v3", credentials=creds)
+    calendar = service.calendarList().list().execute()
+    email = calendar["items"][0]["id"]
     currentTime = datetime.datetime.now(tz=datetime.timezone.utc).isoformat() # Gets current time
     #time.max is the latest time (23:59:59 so only the events for the current day are returned)
     latestTime = datetime.datetime.combine(datetime.datetime.now(), time.max, datetime.timezone.utc).isoformat()
@@ -45,7 +49,7 @@ def main():
     events = (
       service.events()
       .list(
-        calendarId = "primary", #Gets the primary user's calendary
+        calendarId = "primary", #Gets the primary user's calendar
         timeMin = currentTime, #The earliest time to look for events
         timeMax = latestTime, #The latest time to look for events
         singleEvents = True, #Only gets 1 event of that type if there are multiple
@@ -56,8 +60,10 @@ def main():
 
     events = events.get("items", [])
     eventsHolder = []
+    returnDict = {}
+    returnDict["Email"] = email
     if not events:
-      print("No upcoming events")
+      returnDict["Events"] = "No upcoming events"
     else:
       for event in events:
         startTime = datetime.datetime.fromisoformat(event["start"]["dateTime"])
@@ -68,7 +74,9 @@ def main():
         dict["Start time"] = datetime.datetime.strftime(startTime, "%H:%M")
         dict["End time"] = datetime.datetime.strftime(endTime, "%H:%M")
         eventsHolder.append(dict)
-    return eventsHolder
+      returnDict["Events"] = eventsHolder
+    print(returnDict)
+    return returnDict
 
     # Call the Calendar API
     """
@@ -99,6 +107,7 @@ def main():
 
   except HttpError as error:
     print(f"An error occurred: {error}")
+
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ import wardrobe
 import weather
 import clothing_recommendation as c_r
 import image_generation as i_g
+import GoogleCalendar
+import send_email
 
 
 load_dotenv()
@@ -33,14 +35,20 @@ def main():
     weatherData = weather.getWeather(city)
     clothes = wardrobe.getClothes()
 
-    recommendation = c_r.generateLLMResponse(weatherData["Weather"], weatherData["Temperature"], city, clothes)
+    calendarInfo = GoogleCalendar.main()
+    events = calendarInfo["Events"]
+    userEmail = calendarInfo["Email"]
+
+
+    recommendation = c_r.generateLLMResponse(weatherData["Weather"], weatherData["Temperature"], city, clothes, events)
     
     userWardrobe = wardrobe.loadWardrobe()
 
     images = wardrobe.getClothingImages(userWardrobe, recommendation)
-    
+    print(GoogleCalendar.getEmail())
     i_g.showImageWithPollinations(images, recommendation)
     image = Image.open("outfit.png")
+    send_email.sendEmail(userEmail, userEmail)
     image.show()
 
     
