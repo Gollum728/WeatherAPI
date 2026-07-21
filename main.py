@@ -31,6 +31,7 @@ userImageURL = "https://res.cloudinary.com/dytqwfesq/image/upload/v1782742488/PX
 
 
 def main():
+    attachmentImages = []
     city = input("Enter a city : ")
     weatherData = weather.getWeather(city)
     clothes = wardrobe.getClothes()
@@ -39,17 +40,29 @@ def main():
     events = calendarInfo["Events"]
     userEmail = calendarInfo["Email"]
 
-
+    
     recommendation = c_r.generateLLMResponse(weatherData["Weather"], weatherData["Temperature"], city, clothes, events)
     
     userWardrobe = wardrobe.loadWardrobe()
 
-    images = wardrobe.getClothingImages(userWardrobe, recommendation)
-    print(GoogleCalendar.getEmail())
-    i_g.showImageWithPollinations(images, recommendation)
-    image = Image.open("outfit.png")
-    send_email.sendEmail(userEmail, userEmail)
-    image.show()
+
+    
+    i_g.generateBaseOutfit(userWardrobe, recommendation["primary_outfit"], "primary_outfit.png")
+    primary_outerwear = recommendation["primary_outfit"]["outerwear"]
+    if primary_outerwear is not None:
+        i_g.generateOuterwear(userWardrobe, recommendation["primary_outfit"], "primary_outfit.png")
+    attachmentImages.append("primary_outfit.png")
+
+    if recommendation["primary_outfit"]["packed_outfit"] is not None:
+        i_g.generateBaseOutfit(userWardrobe, recommendation["primary_outfit"]["packed_outfit"], "packed_outfit.png")
+        packed_outerwear = recommendation["primary_outfit"]["outerwear"]
+        if packed_outerwear is not None:
+            i_g.generateOuterwear(userWardrobe, recommendation["primary_outfit"]["packed_outfit"], "packed_outfit.png")
+        attachmentImages.append("packed_outfit.png")
+
+    #image = Image.open("primary_outfit.png")
+    send_email.sendEmail(userEmail, userEmail, attachmentImages)
+    #image.show()
 
     
 
