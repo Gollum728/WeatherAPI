@@ -10,6 +10,7 @@ import clothing_recommendation as c_r
 import image_generation as i_g
 import GoogleCalendar
 import send_email
+import location
 
 
 load_dotenv()
@@ -31,10 +32,11 @@ userImageURL = "https://res.cloudinary.com/dytqwfesq/image/upload/v1782742488/PX
 
 
 def main():
+    location = location.getLocation()
     attachmentImages = []
-    city = input("Enter a city : ")
+    #city = input("Enter a city : ")
     #weatherData = weather.getCurrentWeather(city)
-    weatherData = weather.getWeatherForDay(city)
+    weatherData = weather.getWeatherForDay(location)
     clothes = wardrobe.getClothes()
 
     calendarInfo = GoogleCalendar.main()
@@ -42,7 +44,7 @@ def main():
     userEmail = calendarInfo["Email"]
 
     
-    recommendation = c_r.generateLLMResponse(weatherData, city, clothes, events)
+    recommendation = c_r.generateLLMResponse(weatherData, location, clothes, events)
     
     userWardrobe = wardrobe.loadWardrobe()
 
