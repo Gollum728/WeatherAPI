@@ -1,5 +1,5 @@
 import datetime
-from datetime import time
+from datetime import time, timedelta
 import os.path
 
 from google.auth.transport.requests import Request
@@ -41,17 +41,29 @@ def main():
     service = build("calendar", "v3", credentials=creds)
     calendar = service.calendarList().list().execute()
     email = calendar["items"][0]["id"]
-    currentTime = datetime.datetime.now(tz=datetime.timezone.utc).isoformat() # Gets current time
-    #time.max is the latest time (23:59:59 so only the events for the current day are returned)
-    latestTime = datetime.datetime.combine(datetime.datetime.now(), time.max, datetime.timezone.utc).isoformat()
-    print(currentTime)
-    print(latestTime)
+    tomorrow = datetime.datetime.now() + timedelta(days=1)
+
+    startOfDay = datetime.datetime.combine(
+      tomorrow.date(),
+      time.min,
+      datetime.timezone.utc
+    ).isoformat()
+
+    endOfDay = datetime.datetime.combine(
+      tomorrow.date(),
+      time.max,
+      datetime.timezone.utc
+    ).isoformat()
+
+
+    print(startOfDay)
+    print(endOfDay)
     events = (
       service.events()
       .list(
         calendarId = "primary", #Gets the primary user's calendar
-        timeMin = currentTime, #The earliest time to look for events
-        timeMax = latestTime, #The latest time to look for events
+        timeMin = startOfDay, #The earliest time to look for events
+        timeMax = endOfDay, #The latest time to look for events
         singleEvents = True, #Only gets 1 event of that type if there are multiple
         orderBy = "startTime",
       )

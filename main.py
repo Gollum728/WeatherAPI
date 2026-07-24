@@ -33,7 +33,8 @@ userImageURL = "https://res.cloudinary.com/dytqwfesq/image/upload/v1782742488/PX
 def main():
     attachmentImages = []
     city = input("Enter a city : ")
-    weatherData = weather.getWeather(city)
+    #weatherData = weather.getCurrentWeather(city)
+    weatherData = weather.getWeatherForDay(city)
     clothes = wardrobe.getClothes()
 
     calendarInfo = GoogleCalendar.main()
@@ -41,7 +42,7 @@ def main():
     userEmail = calendarInfo["Email"]
 
     
-    recommendation = c_r.generateLLMResponse(weatherData["Weather"], weatherData["Temperature"], city, clothes, events)
+    recommendation = c_r.generateLLMResponse(weatherData, city, clothes, events)
     
     userWardrobe = wardrobe.loadWardrobe()
 

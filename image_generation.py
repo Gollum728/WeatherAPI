@@ -82,9 +82,9 @@ def generateBaseOutfit(images, recommendation, filename):
 
             The remaining images are CLOTHING REFERENCE IMAGES ONLY. They are NOT identity references and must NEVER influence the person's appearance. Use them ONLY to copy the garments.
 
-            The second image is the reference for the top. Replace the person's existing top with the exact garment shown in the second image, which is a {top}. Match the colour, fabric, sleeve length, collar, fit, logos, patterns and design as accurately as possible. Do not tuck the top in unless it is a formal button-up shirt. Do not add any folds or colours that are not in the reference image"
+            The second image is the reference for the top. Replace the person's existing top with the exact garment shown in the second image, which is a {top}. Match the garment's colour, shape, length, fit and styling exactly to the reference image. Do not add rolled cuffs, folded hems, rolled-up sleeves, turned-up trouser legs, tucks, colour changes, patterns or other styling details that are not present in the reference image. Only add the minimal natural fabric creasing necessary for the garment to be realistically worn by the person.
 
-            The third image is the reference for the bottom. Replace the person's existing bottom with the exact garment shown in the third image, which is {bottom}. Match the colour, fabric, fit, logos, patterns and design as accurately as possible. Do not add any folds or colours that are not in the reference image"
+            The third image is the reference for the bottom. Replace the person's existing bottom with the exact garment shown in the third image, which is {bottom}. Match the garment's colour, shape, length, fit and styling exactly to the reference image. Do not add rolled cuffs, folded hems, rolled-up sleeves, turned-up trouser legs, tucks, colour changes, patterns or other styling details that are not present in the reference image. Only add the minimal natural fabric creasing necessary for the garment to be realistically worn by the person.
             """
    
     prompt += """

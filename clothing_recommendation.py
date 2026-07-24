@@ -15,7 +15,7 @@ client = genai.Client(api_key = LLM_KEY)
 
 
 
-def generateLLMResponse(weather, temperature, location, clothes, events):
+def generateLLMResponse(weather, location, clothes, events):
     jsonFormat = """Return your answer as valid JSON in the following format.
 
           If no outerwear is required, set "outerwear" to null. Otherwise, set it to the exact name of the outerwear item from the provided clothing list.
@@ -51,7 +51,7 @@ def generateLLMResponse(weather, temperature, location, clothes, events):
     try:
       llmResponse = client.models.generate_content_stream(
           model = "gemini-3.5-flash",
-          contents = f"I am currently in {location}. The weather is {weather} and it is {temperature} degrees celsius. Here is a list of the clothes that I own : {clothes}. Here are the events that I have today {events}. Based on this, give me 2 outfit recommendations using the clothes that I have - 1 outfit that would suit the weather conditions and the events I have today perfectly, and 1 backup option. If necessary, I can pack a bag with another set of clothes if an event I have requires a change of clothes, but don't include multiple outfit changes - I can only take 1 bag with 1 outfit inside! The colour of the clothing should be considered when making a decision - both the top and bottom ideally shouldn't be the same unless required. Give me a confidence score out of 10 for both of these options. Don't add extra details about the clothes, only use the details that are provided. Return your response in a JSON format like this: {jsonFormat}. Return only the JSON object. Don't include markdown or any explanations!"
+          contents = f"Tomorrow I will be in {location}. Here is the weather tomorrow in {location} : {weather}. Here is a list of the clothes that I own : {clothes}. Here are the events that I have today {events}. Based on this, give me 2 outfit recommendations using the clothes that I have - 1 outfit that would suit the weather conditions and the events I have tomorrow perfectly, and 1 backup option. If necessary, I can pack a bag with another set of clothes if an event I have requires a change of clothes, but don't include multiple outfit changes - I can only take 1 bag with 1 outfit inside! The colour of the clothing should be considered when making a decision - both the top and bottom ideally shouldn't be the same unless required. Give me a confidence score out of 10 for both of these options. Don't add extra details about the clothes, only use the details that are provided. Return your response in a JSON format like this: {jsonFormat}. Return only the JSON object. Don't include markdown or any explanations!"
       )
 
       output = ""
