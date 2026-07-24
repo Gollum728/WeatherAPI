@@ -32,6 +32,7 @@ def getWeatherForDay(location):
     nextDay = nextDatetime.split()[0]
     if response.status_code == 200:
         jsonData = response.json()
+        print(jsonData["city"]["name"])
         forecastData = jsonData["list"]
         for time in forecastData:
             dateTime = time["dt_txt"]
@@ -50,4 +51,4 @@ def getWeatherForDay(location):
 
 
 
-getWeatherForDay("London")
+getWeatherForDay("Tenerife")
