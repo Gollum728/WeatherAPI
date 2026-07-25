@@ -74,28 +74,99 @@ def generateBaseOutfit(images, recommendation, filename):
     #mainTop = data["primary_outfit"]["top"]
     #mainBottoms = data["primary_outfit"]["bottom"]
     prompt = f"""
-            Treat this as an IMAGE EDIT, not a new image generation.
+            This is an IMAGE EDIT task.
 
-            The first image is the ONLY image containing the person to edit. The first image is the source image and must remain unchanged except for replacing the clothing.
+            Image 1 is the source image. Edit this image only.
 
-            The identity in the first image is locked. Recreate the EXACT same person. Do NOT generate a new person. Do NOT change the person's face, hairstyle, facial features, age, gender, skin tone, body shape, height, pose, camera angle, background, lighting or accessories.
+            Images 2, 3 and any subsequent images are clothing reference images only. They are NOT identity references and must only be used to recreate the garments.
 
-            The remaining images are CLOTHING REFERENCE IMAGES ONLY. They are NOT identity references and must NEVER influence the person's appearance. Use them ONLY to copy the garments.
+            OBJECTIVE
 
-            The second image is the reference for the top. Replace the person's existing top with the exact garment shown in the second image, which is a {top}. Match the garment's colour, shape, length, fit and styling exactly to the reference image. Do not add rolled cuffs, folded hems, rolled-up sleeves, turned-up trouser legs, tucks, colour changes, patterns or other styling details that are not present in the reference image. Only add the minimal natural fabric creasing necessary for the garment to be realistically worn by the person.
+            Replace the person's clothing in Image 1 with the garments shown in the clothing reference images while keeping everything else identical.
 
-            The third image is the reference for the bottom. Replace the person's existing bottom with the exact garment shown in the third image, which is {bottom}. Match the garment's colour, shape, length, fit and styling exactly to the reference image. Do not add rolled cuffs, folded hems, rolled-up sleeves, turned-up trouser legs, tucks, colour changes, patterns or other styling details that are not present in the reference image. Only add the minimal natural fabric creasing necessary for the garment to be realistically worn by the person.
+            PRIORITY 1 – PRESERVE THE PERSON
+
+            The person in Image 1 is the exact person who must appear in the output.
+
+            Do NOT change:
+            - face
+            - hairstyle
+            - facial features
+            - skin tone
+            - age
+            - gender
+            - body shape
+            - height
+            - pose
+            - expression
+            - accessories
+            - shoes
+            - background
+            - lighting
+            - camera angle
+            - framing
+
+            Only the clothing may change.
+
+            PRIORITY 2 – RECREATE THE GARMENTS EXACTLY
+
+            Image 2 is the top.
+
+            Replace the person's existing top with the exact garment shown in Image 2.
+
+            Image 3 is the bottom.
+
+            Replace the person's existing bottoms with the exact garment shown in Image 3.
+
+            If additional clothing reference images are supplied (such as a jacket), replace the corresponding clothing item using those references.
+
+            For every garment, preserve exactly:
+            - colour
+            - fit
+            - length
+            - cut
+            - style
+            - logos
+            - graphics
+            - stitching
+            - pockets
+            - zips
+            - cuffs
+            - hems
+            - fabric texture
+
+            Do not invent or remove any garment details. Don't add any folds or tuck in the t-shirt!
+
+            Colour accuracy is mandatory. Do not substitute a different colour even if it appears more realistic.
+
+            PRIORITY 3 – REPLACE, DO NOT BLEND
+
+            Completely remove the person's original clothing.
+
+            Do not blend, partially preserve or combine the original clothing with the reference garments.
+
+            The finished outfit must consist only of the garments shown in the reference images.
+
+            PRIORITY 4 – PHOTOREALISM
+
+            Produce a realistic full-body photograph.
+
+            The garments should naturally fit the person's body with only the minimal wrinkles caused by normal wear.
+
+            Do not add unnecessary folds, rolled sleeves, rolled hems, tucks or styling that is not present in the reference images.
+
+            FINAL CHECK
+
+            Before producing the final image, verify that:
+
+            ✓ The person is identical to Image 1.
+            ✓ The top exactly matches Image 2.
+            ✓ The bottoms exactly match Image 3.
+            ✓ Any additional garments exactly match their reference images.
+            ✓ Only the clothing has changed.
             """
-   
-    prompt += """
-            Completely remove the person's original clothing. Do not preserve, blend or mix any part of the original garments with the new garments. Replace them entirely with the clothing shown in the reference images.
+    
 
-            Recreate the garments as faithfully as possible. Do not invent details. Do not add folds, rolled sleeves, cuffs or other modifications that are not present in the reference images.
-
-            Produce a photorealistic full-body photograph showing the person's entire body from head to toe, including both shoes and both feet. Preserve the original framing and composition exactly. Do not crop, zoom, reposition or change the camera distance.
-
-            IMPORTANT: Only the clothing may change. Everything else must remain IDENTICAL to the first image. The output must clearly depict the exact same person as the first image. Do not generate a new person for this picture, the person should be the exact same as the person depicted in the first image
-            """
     postImage = requests.post( # Post used for editing image
         "https://gen.pollinations.ai/v1/images/edits",
         headers = {
