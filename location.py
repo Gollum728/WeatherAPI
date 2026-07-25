@@ -32,4 +32,3 @@ def determineHoliday(data):
             return True
         return False
 
-print(getLocation())

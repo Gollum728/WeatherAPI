@@ -18,7 +18,7 @@ def loadWardrobe():
         data = csv.reader(f)
         for row in data:
             clothesDict[row[0]] = row[-1].replace(" ", "") 
-    print(clothesDict)
+    #print(clothesDict)
     return clothesDict
 
 # def getClothingImages(wardrobe, recommendation):
