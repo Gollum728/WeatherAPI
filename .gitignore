@@ -1,0 +1,8 @@
+.env
+calendar-credentials.json
+token.json
+__pycache__/
+*.pyc
+outfit.png
+packed_outfit.png
+primary_outfit.png
